@@ -1,0 +1,639 @@
+{
+  "workflow": {
+    "unique_name": "definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu",
+    "name": "SXO-Training Master",
+    "title": "SXO-Training Master",
+    "type": "generic.workflow",
+    "base_type": "workflow",
+    "variables": [
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "local",
+          "name": "results_jsonpath",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01T6J0Y2IH0PQ63XElZzNtj8cvqh14pnVp3",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "username",
+          "type": "datatype.string",
+          "is_required": true,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01T5SJQ6IC40F1ORs75D2rvYpUyUycJdiQM",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "local",
+          "name": "results_loop",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01T5WLX2OH2FJ15KwDB3nBrmVLmB0kwCTtH",
+        "object_type": "variable_workflow"
+      }
+    ],
+    "properties": {
+      "atomic": {
+        "is_atomic": false
+      },
+      "delete_workflow_instance": false,
+      "display_name": "SXO-Training Master",
+      "runtime_user": {
+        "target_default": true
+      },
+      "target": {
+        "target_type": "web-service.endpoint",
+        "target_id": "definition_target_01T5QE4B8556V7bWHJHQSAsu3f8fRQeDNBX",
+        "execute_on_workflow_target": true
+      }
+    },
+    "object_type": "definition_workflow",
+    "actions": [
+      {
+        "unique_name": "definition_activity_01T5SIDUU8APX28ZPyALrHfsdVFl0wqpN05",
+        "name": "SXO-Training HTTP Atomic",
+        "title": "SXO-Training HTTP Atomic",
+        "type": "workflow.atomic_workflow",
+        "base_type": "subworkflow",
+        "properties": {
+          "display_name": "SXO-Training HTTP Atomic",
+          "input": {
+            "variable_workflow_01T5R4DUNCTCG7ZfUMjeFMpNd5qujwLrPeQ": "users"
+          },
+          "runtime_user": {
+            "target_default": true
+          },
+          "target": {
+            "execute_on_this_target": true,
+            "target_id": "definition_target_01T5QE4B8556V7bWHJHQSAsu3f8fRQeDNBX",
+            "target_type": "web-service.endpoint"
+          },
+          "workflow_id": "definition_workflow_01T5R0RZOM1TO2z4Y1SEQcPqBrMHG56uYmF"
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01T5SJU43ST3B1HmoYhIJyxe3gd6eoSW6Ty",
+        "name": "Read Table from JSON",
+        "title": "Read Table from JSON",
+        "type": "corejava.read_table_from_json",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "continue_on_failure": false,
+          "display_name": "Read Table from JSON",
+          "input_json": "$activity.definition_activity_01T5SIDUU8APX28ZPyALrHfsdVFl0wqpN05.output.variable_workflow_01T5R4T6RYWH03j0PYfl3eVDb8ASSyaISBB$",
+          "jsonpath_query": "$.",
+          "persist_output": true,
+          "populate_columns": false,
+          "skip_execution": false,
+          "table_columns": [
+            {
+              "column_name": "name",
+              "column_type": "string"
+            },
+            {
+              "column_name": "username",
+              "column_type": "string"
+            }
+          ]
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01T5UA9IVLHID47GBpqypl1YoT4KSYrTHBU",
+        "name": "For Each",
+        "title": "For Each",
+        "type": "logic.for_each",
+        "base_type": "activity",
+        "properties": {
+          "continue_on_failure": false,
+          "display_name": "For Each",
+          "skip_execution": false,
+          "source_array": "$activity.definition_activity_01T5SJU43ST3B1HmoYhIJyxe3gd6eoSW6Ty.output.read_table_from_json$"
+        },
+        "object_type": "definition_activity",
+        "actions": [
+          {
+            "unique_name": "definition_activity_01T5UB0KIS1O521Y5z5zlcVTd4BnfZWun8W",
+            "name": "Condition Block",
+            "title": "If Found Name",
+            "type": "logic.if_else",
+            "base_type": "activity",
+            "properties": {
+              "continue_on_failure": false,
+              "display_name": "If Found Name",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "blocks": [
+              {
+                "unique_name": "definition_activity_01T5UB0KRWAL156KXvqRqZFMrNJT0xgb2o2",
+                "name": "Condition Branch",
+                "title": "Then",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$activity.definition_activity_01T5UA9IVLHID47GBpqypl1YoT4KSYrTHBU.input.source_array[@].username$",
+                    "operator": "eq",
+                    "right_operand": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.input.variable_workflow_01T5SJQ6IC40F1ORs75D2rvYpUyUycJdiQM$"
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "Then",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01T5WM2QPDXEC72fQBquPMRnQ24PqL308HA",
+                    "name": "Set Variables",
+                    "title": "Set Variables",
+                    "type": "core.set_multiple_variables",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Set Variables",
+                      "skip_execution": false,
+                      "variables_to_update": [
+                        {
+                          "variable_to_update": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.local.variable_workflow_01T5WLX2OH2FJ15KwDB3nBrmVLmB0kwCTtH$",
+                          "variable_value_new": "We Found $activity.definition_activity_01T5UA9IVLHID47GBpqypl1YoT4KSYrTHBU.input.source_array[@].name$ by their username $workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.input.variable_workflow_01T5SJQ6IC40F1ORs75D2rvYpUyUycJdiQM$"
+                        }
+                      ]
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01T5X3NHSBH5R2YCV3YhDmxo52QCFBpOfYQ",
+                    "name": "Webex Teams - Post Message to Room",
+                    "title": "Webex Teams - Post Message to Room",
+                    "type": "workflow.atomic_workflow",
+                    "base_type": "subworkflow",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Webex Teams - Post Message to Room",
+                      "input": {
+                        "variable_workflow_01PP78DJH1TI76BYfsu9g0Tqj2S6cUxjtu5": "$global.variable_01Q88QN87N60E0yLiPrZnV5RsEf6Dro3fyn.global.variable_01Q88QN87N60E0yLiPrZnV5RsEf6Dro3fyn$",
+                        "variable_workflow_01PP78DJH1XNQ7gNQ5iZdperRHqrppzARXC": "$global.variable_01Q88EJPHOLEU2BWNBbiH3PWn1h4ANBOGhS.global.variable_01Q88EJPHOLEU2BWNBbiH3PWn1h4ANBOGhS$",
+                        "variable_workflow_01PP78DJH1YWL3allalGQbg1VkgKwh9GvCi": "",
+                        "variable_workflow_01PP78DJH22BB3Ej3I8tJ4OCQur0unYGjj9": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.local.variable_workflow_01T5WLX2OH2FJ15KwDB3nBrmVLmB0kwCTtH$",
+                        "variable_workflow_01SVERQNMKN8N6vqX2djMtAfshphGydGsH8": ""
+                      },
+                      "runtime_user": {
+                        "target_default": true
+                      },
+                      "skip_execution": false,
+                      "target": {
+                        "override_workflow_target": true,
+                        "target_id": "definition_target_01GFV0RAKXT9C0NR8TSTvDT875Nkj2e0AVP",
+                        "target_type": "web-service.endpoint"
+                      },
+                      "workflow_id": "definition_workflow_01PP78DJMXS415nTjonujf03ROkr6t2PNyw"
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              },
+              {
+                "unique_name": "definition_activity_01T5UB0L9YI2M3lzI6ZX4yUERvIOO3v1wJq",
+                "name": "Condition Branch",
+                "title": "Else",
+                "type": "logic.condition_block",
+                "base_type": "activity",
+                "properties": {
+                  "condition": {
+                    "left_operand": "$activity.definition_activity_01T5UA9IVLHID47GBpqypl1YoT4KSYrTHBU.input.source_array[@].username$",
+                    "operator": "ne",
+                    "right_operand": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.input.variable_workflow_01T5SJQ6IC40F1ORs75D2rvYpUyUycJdiQM$"
+                  },
+                  "continue_on_failure": false,
+                  "display_name": "Else",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01T5UDMNSKSKU6CVRVJdbeLhNxAfty9NRNn",
+                    "name": "Continue",
+                    "title": "Continue",
+                    "type": "logic.continue",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Continue",
+                      "skip_execution": false
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "unique_name": "definition_activity_01T63MLBH70XD62LJgTFdP7GnnGaue2LFW5",
+        "name": "JSONPath Query",
+        "title": "Find Name",
+        "type": "corejava.jsonpathquery",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "continue_on_failure": true,
+          "display_name": "Find Name",
+          "input_json": "$activity.definition_activity_01T5SIDUU8APX28ZPyALrHfsdVFl0wqpN05.output.variable_workflow_01T5R4T6RYWH03j0PYfl3eVDb8ASSyaISBB$",
+          "jsonpath_queries": [
+            {
+              "jsonpath_query": "$.[?(@.username==\"$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.input.variable_workflow_01T5SJQ6IC40F1ORs75D2rvYpUyUycJdiQM$\")]",
+              "jsonpath_query_name": "name",
+              "jsonpath_query_type": "string"
+            }
+          ],
+          "skip_execution": false
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01T6ISIXXWKAQ4NdsH0viTTk3wxvTwQ84Wl",
+        "name": "Execute Python Script",
+        "title": "Execute Python Script",
+        "type": "python3.script",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "continue_on_failure": true,
+          "display_name": "Execute Python Script",
+          "script": "import json\nimport sys\n\ntry:\n    block = json.loads(sys.argv[1])\n    if block['name']:\n        output = block['name']\n    else:\n        output = \"No Name Found.\"\nexcept:\n    output = \"No Name Found\"",
+          "script_arguments": [
+            "$activity.definition_activity_01T63MLBH70XD62LJgTFdP7GnnGaue2LFW5.output.jsonpath_queries.name$"
+          ],
+          "script_queries": [
+            {
+              "script_query": "output",
+              "script_query_name": "name_of_person",
+              "script_query_type": "string"
+            }
+          ],
+          "skip_execution": false
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01T6IVXK5BK9Y2Wo15CgXVMlZrZFOVGWCbZ",
+        "name": "Condition Block",
+        "title": "If Name Found",
+        "type": "logic.if_else",
+        "base_type": "activity",
+        "properties": {
+          "continue_on_failure": false,
+          "display_name": "If Name Found",
+          "skip_execution": false
+        },
+        "object_type": "definition_activity",
+        "blocks": [
+          {
+            "unique_name": "definition_activity_01T6IVXKAI3426mrqkWu9vaTgpHbtTyOnRr",
+            "name": "Condition Branch",
+            "title": "Then",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$activity.definition_activity_01T63MLBH70XD62LJgTFdP7GnnGaue2LFW5.output.succeeded$",
+                "operator": "eq",
+                "right_operand": true
+              },
+              "continue_on_failure": false,
+              "display_name": "Then",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_01T6J5W8OBT0A4nS7GzoDxtHAiN3cCREa2F",
+                "name": "Group",
+                "title": "Group",
+                "type": "logic.group",
+                "base_type": "activity",
+                "properties": {
+                  "continue_on_failure": false,
+                  "display_name": "Group",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01T6J180QQSZD3cg1fXhQk7LB6HJ2KFggr1",
+                    "name": "Set Variables",
+                    "title": "Update Results_JSON Local variable",
+                    "type": "core.set_multiple_variables",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Update Results_JSON Local variable",
+                      "skip_execution": false,
+                      "variables_to_update": [
+                        {
+                          "variable_to_update": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.local.variable_workflow_01T6J0Y2IH0PQ63XElZzNtj8cvqh14pnVp3$",
+                          "variable_value_new": "We found $activity.definition_activity_01T6ISIXXWKAQ4NdsH0viTTk3wxvTwQ84Wl.output.script_queries.name_of_person$ by their username: $workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.input.variable_workflow_01T5SJQ6IC40F1ORs75D2rvYpUyUycJdiQM$"
+                        }
+                      ]
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01T6J36FB23XZ6rrbwelDLNf1mSqHxGxzAr",
+                    "name": "Send Email",
+                    "title": "Send Email",
+                    "type": "email.smtp_send_email",
+                    "base_type": "activity",
+                    "properties": {
+                      "action_timeout": 180,
+                      "body": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.local.variable_workflow_01T6J0Y2IH0PQ63XElZzNtj8cvqh14pnVp3$",
+                      "continue_if_one_address_valid": false,
+                      "continue_on_failure": false,
+                      "display_name": "Send Email",
+                      "runtime_user": {
+                        "target_default": true
+                      },
+                      "skip_execution": false,
+                      "subject": "Results from SXO-Training results_json variable",
+                      "target": {
+                        "override_workflow_target": true,
+                        "target_id": "definition_target_01T5QVECEML8M3JgfA058R7w3uYSmiKzrnX"
+                      },
+                      "to": "darlynn@cisco.com"
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01T6IVXKHFA2V5WXpULvWyegtUkks6BIP5d",
+            "name": "Condition Branch",
+            "title": "Else",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$activity.definition_activity_01T63MLBH70XD62LJgTFdP7GnnGaue2LFW5.output.succeeded$",
+                "operator": "eq",
+                "right_operand": false
+              },
+              "continue_on_failure": false,
+              "display_name": "Else",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_01T6J6451H8QC6QHB9Qs95RiJDAKMncpRR7",
+                "name": "Group",
+                "title": "Group",
+                "type": "logic.group",
+                "base_type": "activity",
+                "properties": {
+                  "continue_on_failure": false,
+                  "display_name": "Group",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity",
+                "actions": [
+                  {
+                    "unique_name": "definition_activity_01T6J6451JKML7NyLAnRtd3Ccoy9lKTEA85",
+                    "name": "Set Variables",
+                    "title": "Update Results_JSON Local variable",
+                    "type": "core.set_multiple_variables",
+                    "base_type": "activity",
+                    "properties": {
+                      "continue_on_failure": false,
+                      "display_name": "Update Results_JSON Local variable",
+                      "skip_execution": false,
+                      "variables_to_update": [
+                        {
+                          "variable_to_update": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.local.variable_workflow_01T6J0Y2IH0PQ63XElZzNtj8cvqh14pnVp3$",
+                          "variable_value_new": "We failed to find User with the username: $workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.input.variable_workflow_01T5SJQ6IC40F1ORs75D2rvYpUyUycJdiQM$"
+                        }
+                      ]
+                    },
+                    "object_type": "definition_activity"
+                  },
+                  {
+                    "unique_name": "definition_activity_01T6J6451MSPG0mRySr7jtGwYmXgYDLzzQl",
+                    "name": "Send Email",
+                    "title": "Send Email",
+                    "type": "email.smtp_send_email",
+                    "base_type": "activity",
+                    "properties": {
+                      "action_timeout": 180,
+                      "body": "$workflow.definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu.local.variable_workflow_01T6J0Y2IH0PQ63XElZzNtj8cvqh14pnVp3$",
+                      "continue_if_one_address_valid": false,
+                      "continue_on_failure": false,
+                      "display_name": "Send Email",
+                      "runtime_user": {
+                        "target_default": true
+                      },
+                      "skip_execution": false,
+                      "subject": "Results from SXO-Training results_json variable",
+                      "target": {
+                        "override_workflow_target": true,
+                        "target_id": "definition_target_01T5QVECEML8M3JgfA058R7w3uYSmiKzrnX"
+                      },
+                      "to": "darlynn@cisco.com"
+                    },
+                    "object_type": "definition_activity"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "categories": [
+      "category_01T5QAUAK2DT17JKb0E4HoGqx4gHkiSAmoK"
+    ]
+  },
+  "categories": {
+    "category_01T5QAUAK2DT17JKb0E4HoGqx4gHkiSAmoK": {
+      "unique_name": "category_01T5QAUAK2DT17JKb0E4HoGqx4gHkiSAmoK",
+      "name": "SXO Training",
+      "title": "SXO Training",
+      "type": "basic.category",
+      "base_type": "category",
+      "description": "This category is to identify all workflows etc related to SXO bootcamp training. ",
+      "category_type": "custom",
+      "object_type": "category"
+    }
+  },
+  "triggers": {
+    "triggerschedule_01T6JHB1IOINO4PxYDXHUAZTGGXTnLwythH": {
+      "workflow_id": "definition_workflow_01T5SFJPV4D2003VTqVaTm3d0FtoQQsu7yu",
+      "name": "Hourly",
+      "title": "",
+      "lowercase_name": "schedule.hourly",
+      "description": "Trigger to run the Workflow hourly",
+      "type": "schedule",
+      "base_type": "trigger",
+      "ref_id": "schedule_01T6JGPM4GS316BX5CE77XGVdbjBfIkpxDJ",
+      "version": "1.0.0",
+      "disabled": false,
+      "unique_name": "triggerschedule_01T6JHB1IOINO4PxYDXHUAZTGGXTnLwythH",
+      "object_type": "triggerschedule"
+    }
+  },
+  "schedules": {
+    "schedule_01T6JGPM4GS316BX5CE77XGVdbjBfIkpxDJ": {
+      "unique_name": "schedule_01T6JGPM4GS316BX5CE77XGVdbjBfIkpxDJ",
+      "name": "Hourly",
+      "description": "Hourly Schedule for each day",
+      "type": "basic.schedule",
+      "base_type": "schedule",
+      "properties": {
+        "calendar": "calendar_recurring_1BMfMWvgiDhSjBQ7hTSyvz3NyVZ",
+        "timezone": "Etc/GMT+0",
+        "starttime": "00:00",
+        "interval_hours": 1,
+        "interval_minutes": 0,
+        "number_of_times": 23,
+        "display_name": "Hourly",
+        "description": "Hourly Schedule for each day"
+      },
+      "version": "1.0.0",
+      "object_type": "schedule"
+    }
+  },
+  "targets": {
+    "definition_target_01GFV0RAKXT9C0NR8TSTvDT875Nkj2e0AVP": {
+      "unique_name": "definition_target_01GFV0RAKXT9C0NR8TSTvDT875Nkj2e0AVP",
+      "name": "Webex_Teams_Target",
+      "title": "Webex_Teams_Target",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "disable_certificate_validation": false,
+        "display_name": "Webex_Teams_Target",
+        "host": "webexapis.com",
+        "ignore_proxy": false,
+        "no_runtime_user": true,
+        "protocol": "https"
+      }
+    },
+    "definition_target_01T5QE4B8556V7bWHJHQSAsu3f8fRQeDNBX": {
+      "unique_name": "definition_target_01T5QE4B8556V7bWHJHQSAsu3f8fRQeDNBX",
+      "name": "SXO-Training-HTTP Target",
+      "title": "SXO-Training-HTTP Target",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "default_runtime_user_id": "definition_runtime_user_01T5QCVKSLZ9A4XqE0GW7JG65LJoGPTrtbD",
+        "description": "HTTP Target for SXO Traininig Bootcamp",
+        "disable_certificate_validation": true,
+        "display_name": "SXO-Training-HTTP Target",
+        "host": "jsonplaceholder.typicode.com",
+        "ignore_proxy": false,
+        "no_runtime_user": false,
+        "port": 443,
+        "protocol": "https"
+      }
+    },
+    "definition_target_01T5QVECEML8M3JgfA058R7w3uYSmiKzrnX": {
+      "unique_name": "definition_target_01T5QVECEML8M3JgfA058R7w3uYSmiKzrnX",
+      "name": "SXO-Training SMTP Target",
+      "title": "SXO-Training SMTP Target",
+      "type": "email.smtp_endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "default_runtime_user_id": "definition_runtime_user_01T5QPHFYU9LL5J26BjDhZ0Us1fnCXXJHwf",
+        "description": "SMTP Target for SXO bootamp",
+        "display_name": "SXO-Training SMTP Target",
+        "no_runtime_user": false,
+        "port": 465,
+        "protocol": "SMTP",
+        "server": "smtp.gmail.com"
+      }
+    }
+  },
+  "runtime_users": {
+    "definition_runtime_user_01T5QCVKSLZ9A4XqE0GW7JG65LJoGPTrtbD": {
+      "unique_name": "definition_runtime_user_01T5QCVKSLZ9A4XqE0GW7JG65LJoGPTrtbD",
+      "name": "SXO-LAB-HTTPAcccount",
+      "title": "SXO-LAB-HTTPAcccount",
+      "type": "runtime_user.web-service_basic_credentials",
+      "base_type": "runtime_user",
+      "object_type": "definition_runtime_user",
+      "properties": {
+        "auth_option": "*****",
+        "basic_password": "*****",
+        "basic_username": "*****",
+        "description": "The credentials in this instances DONT MATTER. Its simply a process to help guide on creating Account Keys",
+        "display_name": "SXO-LAB-HTTPAcccount"
+      }
+    },
+    "definition_runtime_user_01T5QPHFYU9LL5J26BjDhZ0Us1fnCXXJHwf": {
+      "unique_name": "definition_runtime_user_01T5QPHFYU9LL5J26BjDhZ0Us1fnCXXJHwf",
+      "name": "SXO-Training SMTP Account",
+      "title": "SXO-Training SMTP Account",
+      "type": "runtime_user.email_credentials",
+      "base_type": "runtime_user",
+      "object_type": "definition_runtime_user",
+      "properties": {
+        "description": "This is an account to log into the email gateway. In this example we show GMAIL. \n\nNOTE: I had to create an APP PASSWORD for my GMAIL Account as it has 2FA. ",
+        "display_name": "SXO-Training SMTP Account",
+        "password": "*****",
+        "sender": "*****"
+      }
+    }
+  },
+  "variables": {
+    "variable_01Q88EJPHOLEU2BWNBbiH3PWn1h4ANBOGhS": {
+      "unique_name": "variable_01Q88EJPHOLEU2BWNBbiH3PWn1h4ANBOGhS",
+      "properties": {
+        "value": "*****",
+        "scope": "global",
+        "name": "Webex Teams Token",
+        "type": "datatype.secure_string",
+        "is_required": false,
+        "is_invisible": false
+      },
+      "object_type": "variable"
+    },
+    "variable_01Q88QN87N60E0yLiPrZnV5RsEf6Dro3fyn": {
+      "unique_name": "variable_01Q88QN87N60E0yLiPrZnV5RsEf6Dro3fyn",
+      "properties": {
+        "value": "Y2lzY29zcGFyazovL3VzL1JPT00vMTdmMzc2MDAtMGVhYi0xMWViLWJmMGItMTEwNzY5ZmUwMjg5",
+        "scope": "global",
+        "name": "Webex Teams Room ID",
+        "type": "datatype.string",
+        "description": "Webex Room is Darlynn API Session",
+        "is_required": false,
+        "is_invisible": false
+      },
+      "object_type": "variable"
+    }
+  },
+  "atomic_workflows": [
+    "definition_workflow_01T5R0RZOM1TO2z4Y1SEQcPqBrMHG56uYmF",
+    "definition_workflow_01PP78DJMXS415nTjonujf03ROkr6t2PNyw"
+  ]
+}
