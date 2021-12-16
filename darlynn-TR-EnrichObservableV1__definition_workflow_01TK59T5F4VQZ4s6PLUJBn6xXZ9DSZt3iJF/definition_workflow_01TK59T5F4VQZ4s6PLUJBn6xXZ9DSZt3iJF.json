@@ -1,0 +1,236 @@
+{
+  "workflow": {
+    "unique_name": "definition_workflow_01TK59T5F4VQZ4s6PLUJBn6xXZ9DSZt3iJF",
+    "name": "Threat Response v2 - Enrich Observable V2",
+    "title": "Threat Response v2 - Enrich Observable V2",
+    "type": "generic.workflow",
+    "base_type": "workflow",
+    "variables": [
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "Observable Type",
+          "type": "datatype.string",
+          "description": "The type of observable",
+          "is_required": true,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01TK5BZVKWGNQ1408SP7ccuxxkFqWcCcRca",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.secure_string",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "Access Token",
+          "type": "datatype.secure_string",
+          "is_required": true,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01TK5B68Y9PPL01Yh0lLcp1Lws90UYJGr1K",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "Observable Value",
+          "type": "datatype.string",
+          "description": "The value of the observable",
+          "is_required": true,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01TK5KAMEIZ8G6Y9NZsxsglwOEl26byw2sZ",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "",
+          "scope": "output",
+          "name": "Enrichment Results",
+          "type": "datatype.string",
+          "description": "The detailed results of enrichment, including information from each module consulted",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_01TK5BID54LAR7WHKOMMXS4g7EBhwILf94l",
+        "object_type": "variable_workflow"
+      }
+    ],
+    "properties": {
+      "atomic": {
+        "atomic_group": "Atomic",
+        "is_atomic": true
+      },
+      "delete_workflow_instance": false,
+      "description": "Uses the Threat Response API to collect information about a given observable from all enabled modules.\n\nTarget: HTTP Endpoint for \"visibility.amp.cisco.com\" with a path of \"/iroh\"\n\nAccount Key: None (uses an access token)\n\nSteps:\n[] Request enrichment information from Threat Response\n[] Check if the request was successful:\n[]\u003e If it wasn't, return an error\n[]\u003e If it was, set the output variable\n\nMore information about this API: https://visibility.amp.cisco.com/iroh/iroh-enrich/index.html#/Observe/post_iroh_iroh_enrich_observe_observables",
+      "display_name": "Threat Response v2 - Enrich Observable V2",
+      "runtime_user": {
+        "target_default": true
+      },
+      "target": {
+        "target_type": "web-service.endpoint",
+        "specify_on_workflow_start": true
+      }
+    },
+    "object_type": "definition_workflow",
+    "actions": [
+      {
+        "unique_name": "definition_activity_01TK59WZEIZ0R4qqWF51IDoEwhPNNGP8piS",
+        "name": "Execute Python Script",
+        "title": "Generate observable JSON",
+        "type": "python3.script",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 360,
+          "continue_on_failure": false,
+          "display_name": "Generate observable JSON",
+          "script": "import sys,json\n\nobservables = [{\n\t\"type\": sys.argv[1],\n\t\"value\": sys.argv[2]\n}]\n\nobservableJson = json.dumps(observables)",
+          "script_arguments": [
+            "$workflow.definition_workflow_01TK59T5F4VQZ4s6PLUJBn6xXZ9DSZt3iJF.input.variable_workflow_01TK5BZVKWGNQ1408SP7ccuxxkFqWcCcRca$",
+            "$workflow.definition_workflow_01TK59T5F4VQZ4s6PLUJBn6xXZ9DSZt3iJF.input.variable_workflow_01TK5KAMEIZ8G6Y9NZsxsglwOEl26byw2sZ$"
+          ],
+          "script_queries": [
+            {
+              "script_query": "observableJson",
+              "script_query_name": "observableJson",
+              "script_query_type": "string"
+            }
+          ],
+          "skip_execution": false
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01TK5MG95FV0G4t2ZI5WYWYuEdDE1QLb3ae",
+        "name": "HTTP Request",
+        "title": "Request enrichment",
+        "type": "web-service.http_request",
+        "base_type": "activity",
+        "properties": {
+          "accept": "application/json",
+          "action_timeout": 360,
+          "allow_auto_redirect": true,
+          "body": "$activity.definition_activity_01TK59WZEIZ0R4qqWF51IDoEwhPNNGP8piS.output.script_queries.observableJson$",
+          "content_type": "application/json",
+          "continue_on_error_status_code": true,
+          "continue_on_failure": false,
+          "custom_headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer $workflow.definition_workflow_01TK59T5F4VQZ4s6PLUJBn6xXZ9DSZt3iJF.input.variable_workflow_01TK5B68Y9PPL01Yh0lLcp1Lws90UYJGr1K$"
+            }
+          ],
+          "display_name": "Request enrichment",
+          "method": "POST",
+          "relative_url": "/iroh-enrich/observe/observables",
+          "runtime_user": {
+            "target_default": true
+          },
+          "skip_execution": false,
+          "target": {
+            "use_workflow_target": true
+          }
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01TK5O3ZOWVWV1D2KcvMR87R8lgCErKZzUv",
+        "name": "Condition Block",
+        "title": "Was the request successful",
+        "type": "logic.if_else",
+        "base_type": "activity",
+        "properties": {
+          "continue_on_failure": false,
+          "display_name": "Was the request successful",
+          "skip_execution": false
+        },
+        "object_type": "definition_activity",
+        "blocks": [
+          {
+            "unique_name": "definition_activity_01TK5O406JL9H0m7Rm0cCwVPLnkep7oP4Ma",
+            "name": "Condition Branch",
+            "title": "200/Success",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$activity.definition_activity_01TK5MG95FV0G4t2ZI5WYWYuEdDE1QLb3ae.output.status_code$",
+                "operator": "eq",
+                "right_operand": 200
+              },
+              "continue_on_failure": false,
+              "display_name": "200/Success",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_01TK5OVPX0CXK3ezaQHmC9EL7e9iQFvV0ps",
+                "name": "Set Variables",
+                "title": "Set output variable",
+                "type": "core.set_multiple_variables",
+                "base_type": "activity",
+                "properties": {
+                  "continue_on_failure": false,
+                  "display_name": "Set output variable",
+                  "skip_execution": false,
+                  "variables_to_update": [
+                    {
+                      "variable_to_update": "$workflow.definition_workflow_01TK59T5F4VQZ4s6PLUJBn6xXZ9DSZt3iJF.output.variable_workflow_01TK5BID54LAR7WHKOMMXS4g7EBhwILf94l$",
+                      "variable_value_new": "$activity.definition_activity_01TK5MG95FV0G4t2ZI5WYWYuEdDE1QLb3ae.output.response_body$"
+                    }
+                  ]
+                },
+                "object_type": "definition_activity"
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_01TK5O40MDHK35W8v6j8uuzsakoRbwgBjtB",
+            "name": "Condition Branch",
+            "title": "Anything Else",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$activity.definition_activity_01TK5MG95FV0G4t2ZI5WYWYuEdDE1QLb3ae.output.status_code$",
+                "operator": "ne",
+                "right_operand": 200
+              },
+              "continue_on_failure": false,
+              "display_name": "Anything Else",
+              "skip_execution": false
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_01TK5PUZ7EKTM6SRTqDkQJCG0ECOS1SPYnu",
+                "name": "Completed",
+                "title": "Failed",
+                "type": "logic.completed",
+                "base_type": "activity",
+                "properties": {
+                  "completion_type": "succeeded",
+                  "continue_on_failure": false,
+                  "display_name": "Failed",
+                  "result_message": "Failed to get enrichment information for observable\n\nStatus code: $activity.definition_activity_01TK5MG95FV0G4t2ZI5WYWYuEdDE1QLb3ae.output.status_code$\nResponse body: $activity.definition_activity_01TK5MG95FV0G4t2ZI5WYWYuEdDE1QLb3ae.output.response_body$",
+                  "skip_execution": false
+                },
+                "object_type": "definition_activity"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "categories": [
+      "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
+    ]
+  }
+}
