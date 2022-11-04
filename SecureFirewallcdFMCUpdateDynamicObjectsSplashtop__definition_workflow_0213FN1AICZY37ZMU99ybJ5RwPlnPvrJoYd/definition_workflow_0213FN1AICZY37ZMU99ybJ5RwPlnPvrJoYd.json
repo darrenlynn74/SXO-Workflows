@@ -7,19 +7,6 @@
     "base_type": "workflow",
     "variables": [
       {
-        "schema_id": "datatype.string",
-        "properties": {
-          "value": "Splashtop",
-          "scope": "local",
-          "name": "Dynamic Object Group Name",
-          "type": "datatype.string",
-          "is_required": false,
-          "is_invisible": false
-        },
-        "unique_name": "variable_workflow_0215GB6BYHE952LG86LLpSo5TxX4rjOlNV4",
-        "object_type": "variable_workflow"
-      },
-      {
         "schema_id": "datatype.secure_string",
         "properties": {
           "value": "",
@@ -43,6 +30,19 @@
           "is_invisible": false
         },
         "unique_name": "variable_workflow_0213W0EJEYMLP2EURdC1kMW6CWTXGfKCCmL",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "datatype.string",
+        "properties": {
+          "value": "Splashtop",
+          "scope": "local",
+          "name": "Dynamic Object Group Name",
+          "type": "datatype.string",
+          "is_required": false,
+          "is_invisible": false
+        },
+        "unique_name": "variable_workflow_0215GB6BYHE952LG86LLpSo5TxX4rjOlNV4",
         "object_type": "variable_workflow"
       }
     ],
@@ -71,10 +71,13 @@
         "type": "workflow.atomic_workflow",
         "base_type": "subworkflow",
         "properties": {
+          "continue_on_failure": false,
+          "description": "This atomic captures the Domain UUID",
           "display_name": "Secure Firewall - cdFMC - Get Domain UUID",
           "runtime_user": {
             "target_default": true
           },
+          "skip_execution": false,
           "target": {
             "execute_on_this_target": true,
             "target_id": "definition_target_0215LQ9UAQLLJ22NcVcmF3JMFLP9dKnwj53",
@@ -116,6 +119,7 @@
         "base_type": "subworkflow",
         "properties": {
           "continue_on_failure": true,
+          "description": "Gets the mappings for a dynamic object group from Cisco Secure Firewall managed by the cdFMC",
           "display_name": "Secure Firewall - cdFMC - Get Dynamic Object Group Mappings",
           "input": {
             "variable_workflow_021674O4MBDC96SrKaNPvwzCvm6fXEtzyi7": "$workflow.definition_workflow_0213FN1AICZY37ZMU99ybJ5RwPlnPvrJoYd.local.variable_workflow_02167QEGYRPEK65tVbLZihX7ZaBwNsKq0GP$",
@@ -174,6 +178,7 @@
                 "base_type": "subworkflow",
                 "properties": {
                   "continue_on_failure": false,
+                  "description": "Creates the dynamic object group on Cisco Secure Firewall managed by the cdFMC",
                   "display_name": "Secure Firewall - cdFMC - Create Dynamic Object Group",
                   "input": {
                     "variable_workflow_02168A3196OOS0kCq766KFfxXBuFllwHTRV": "$workflow.definition_workflow_0213FN1AICZY37ZMU99ybJ5RwPlnPvrJoYd.local.variable_workflow_02167QEGYRPEK65tVbLZihX7ZaBwNsKq0GP$",
@@ -207,6 +212,7 @@
         "properties": {
           "action_timeout": 180,
           "continue_on_failure": false,
+          "description": "This Python scripts resolves the Global hostnames posted on the support page and presents the IP Addresses for addition or removal to the Dynamic Object Group\n\nhttps://support-splashtopbusiness.splashtop.com/hc/en-us/articles/115001811966-What-are-the-Firewall-Exceptions-and-IP-addresses-of-Splashtop-servers-Services-",
           "display_name": "Get IP Mappings from DNS Resolution",
           "script": "import sys,json,requests,socket\n\nfqdns = ['st-v3.api.splashtop.com', 'st-v3-g3.api.splashtop.com',\n         'st-v3-src.api.splashtop.com', 'st-v3-src-g3.api.splashtop.com',\n         'st-relay-v3.api.splashtop.com', 'st-relay-v3-g3.api.splashtop.com',\n         'st-lookup-v1.api.splashtop.com', 'st-lookup-v1-g3.api.splashtop.com',\n         'st-premium-v3.api.splashtop.com', 'st-premium-v3-g3.api.splashtop.com']\n\n# Get the existing mappings\nexistingMappingsRaw = sys.argv[1]\nif len(existingMappingsRaw) \u003e 0:\n    existingMappingsRaw = json.loads(existingMappingsRaw)\nelse:\n    existingMappingsRaw = []\nexistingMappings = []\n\nfor mapping in existingMappingsRaw:\n    existingMappings.append(mapping['mapping'])\n\n# Placeholders\ntoRemove = []\ntoAdd = []\nips = []\n\nfor fqdn in fqdns:\n    ips.extend(list({addr[-1][0] for addr in socket.getaddrinfo(fqdn, 0, 0, 0, 0) if addr}))\n    toAdd.extend(list({addr[-1][0] for addr in socket.getaddrinfo(fqdn, 0, 0, 0, 0) if addr not in existingMappings}))\n\n# Process the existing IPs\nfor ip in existingMappings:\n    if ip not in ips:\n        toRemove.append(ip)\n\n# Build the object group for the subnets\ntoAdd = json.dumps({ 'mappings': toAdd })\ntoRemove = json.dumps({ 'mappings': toRemove })",
           "script_arguments": [
@@ -267,6 +273,7 @@
                 "base_type": "subworkflow",
                 "properties": {
                   "continue_on_failure": false,
+                  "description": "Update the Dynamic Opject Group to ADD IP Addresses",
                   "display_name": "Secure Firewall - cdFMC - Update Dynamic Object Group Mapping",
                   "input": {
                     "variable_workflow_02168SMX11WSS3u7PcYfs9rU9z6cZ8ZbFIU": "$workflow.definition_workflow_0213FN1AICZY37ZMU99ybJ5RwPlnPvrJoYd.local.variable_workflow_02167QEGYRPEK65tVbLZihX7ZaBwNsKq0GP$",
@@ -331,6 +338,7 @@
                 "base_type": "subworkflow",
                 "properties": {
                   "continue_on_failure": false,
+                  "description": "Update the Dynamic Object Group to remove IP Addresses",
                   "display_name": "Secure Firewall - cdFMC - Update Dynamic Object Group Mapping",
                   "input": {
                     "variable_workflow_02168SMX11WSS3u7PcYfs9rU9z6cZ8ZbFIU": "$workflow.definition_workflow_0213FN1AICZY37ZMU99ybJ5RwPlnPvrJoYd.local.variable_workflow_02167QEGYRPEK65tVbLZihX7ZaBwNsKq0GP$",
